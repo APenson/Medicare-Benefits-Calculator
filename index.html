@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Medicare Benefits Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f8fb;
+      margin: 0 auto;
+      padding: 20px;
+      max-width: 600px;
+    }
+    h1 {
+      background: #2c3e50;
+      color: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    label {
+      display: block;
+      margin: 15px 0 5px;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    .result {
+      background: #dff0d8;
+      padding: 15px;
+      border-radius: 8px;
+      display: none;
+    }
+    .save-button {
+      background: #3498db;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .save-button:hover {
+      background: #2980b9;
+    }
+  </style>
+</head>
+<body>
+  <h1>Medicare Benefits Calculator</h1>
+
+  <form id="medicareForm">
+    <label for="age">Age of Recipient:</label>
+    <input type="number" id="age" min="0" max="120" required>
+
+    <label for="disability">Are you receiving SSDI (Social Security Disability Insurance)?</label>
+    <select id="disability">
+      <option value="no">No</option>
+      <option value="yes">Yes</option>
+    </select>
+
+    <label for="enrollment">Currently Enrolled in Medicare?</label>
+    <select id="enrollment">
+      <option value="no">No</option>
+      <option value="yes">Yes</option>
+    </select>
+
+    <label for="needs">Primary Care Need:</label>
+    <select id="needs">
+      <option value="home_health">Home Health Services</option>
+      <option value="hospital">Hospital Stay</option>
+      <option value="nursing">Skilled Nursing Facility</option>
+      <option value="prescription">Prescription Coverage</option>
+    </select>
+
+    <button type="submit">Calculate Benefits</button>
+  </form>
+
+  <div class="result" id="resultBox"></div>
+
+  <button class="save-button" onclick="downloadTool()">💾 Save Tool to Device</button>
+
+  <script>
+    document.getElementById('medicareForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const age = parseInt(document.getElementById('age').value);
+      const disability = document.getElementById('disability').value;
+      const enrolled = document.getElementById('enrollment').value;
+      const needs = document.getElementById('needs').value;
+      const resultBox = document.getElementById('resultBox');
+
+      let result = '';
+
+      if (age >= 65 || disability === 'yes') {
+        result += `<strong>✅ Eligible for Medicare.</strong><br>`;
+        if (enrolled === 'no') {
+          result += `Consider enrolling during the next open enrollment period.<br>`;
+        }
+        switch (needs) {
+          case 'home_health':
+            result += `• Medicare Part A and/or B may cover home health services if deemed medically necessary and doctor-prescribed.<br>`;
+            break;
+          case 'hospital':
+            result += `• Medicare Part A covers inpatient hospital stays (subject to deductible and co-pays).<br>`;
+            break;
+          case 'nursing':
+            result += `• Medicare Part A covers skilled nursing for up to 100 days post-hospital stay, with conditions.<br>`;
+            break;
+          case 'prescription':
+            result += `• Medicare Part D or Medicare Advantage Plan required for prescription coverage.<br>`;
+            break;
+        }
+      } else {
+        result += `<strong>❌ Not currently eligible for Medicare based on age or disability.</strong><br>`;
+        result += `Check Medicaid or Marketplace options for coverage.`;
+      }
+
+      resultBox.innerHTML = result;
+      resultBox.style.display = 'block';
+    });
+
+    function downloadTool() {
+      const blob = new Blob([document.documentElement.outerHTML], { type: 'text/html' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'Medicare_Benefits_Calculator.html';
+      a.click();
+    }
+  </script>
+</body>
+</html>
